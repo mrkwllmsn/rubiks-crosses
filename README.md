@@ -49,4 +49,4 @@ re-colours everything.
 The verified move sequence and the colour rules above were both checked against a
 cube simulator before the page was written.
 
-Found by Mark Williamson.
+Found by Mark Williamson - at 2am, practicing RHA trying to get *FASTER*.
