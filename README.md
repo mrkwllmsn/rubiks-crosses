@@ -1,7 +1,7 @@
 # Every Face a Cross
 
 An interactive walkthrough of a Rubik's Cube pattern that puts a cross on all six
-faces using nothing but the Right-Hand Algorithm (`R U R' U'`).
+faces using only the Right-Hand Algorithm (`R U R' U'`). (And a simple cube rotation sequence)
 
 [![The finished pattern: a Rubik's Cube with a cross on every face, beside a readout marking all six as crosses](marks_cross.png)](https://mrkwllmsn.github.io/rubiks-crosses/)
 
