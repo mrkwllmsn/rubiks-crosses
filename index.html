@@ -227,6 +227,8 @@ button[disabled]{opacity:.4; cursor:not-allowed}
 button.primary{background:var(--ink); color:var(--bg); min-width:82px}
 button.primary:hover{background:var(--ink); opacity:.86}
 .mono-btn{font-family:var(--font-mono); font-size:12px}
+button.toggle[aria-pressed="true"]{border-color:var(--ink); background:var(--panel-2)}
+button.toggle[aria-pressed="true"]::before{content:"\2713\00a0"; font-size:11px}
 
 .speed{display:flex; align-items:center; gap:10px; margin-top:12px}
 .speed label{font-family:var(--font-mono); font-size:10px; letter-spacing:.13em; text-transform:uppercase; color:var(--faint)}
@@ -470,6 +472,9 @@ footer{
         <div class="transport" style="margin-top:6px">
           <button id="btnJump1">Skip to first result</button>
           <button id="btnJump2">Skip to six crosses</button>
+        </div>
+        <div class="transport" style="margin-top:6px">
+          <button id="btnSkin" class="toggle" aria-pressed="false">Speed cube</button>
         </div>
         <div class="speed">
           <label for="spd">Speed</label>
@@ -751,9 +756,8 @@ var rim  = new THREE.DirectionalLight(0xffffff, 0.18); rim.position.set(-2, 4, -
 
 var bodyGeo = new THREE.BoxGeometry(0.965, 0.965, 0.965);
 var bodyMat = new THREE.MeshStandardMaterial({ color:0x1a1b21, roughness:0.72, metalness:0.02 });
-var stickerGeo = (function(){
-  // rounded square, like a real cube's stickers
-  var size = 0.80, r = 0.15, h = size / 2, k = h - r;
+function roundedTile(size, r){
+  var h = size / 2, k = h - r;
   var sh = new THREE.Shape();
   sh.moveTo(-k, -h);
   sh.lineTo(k, -h);  sh.quadraticCurveTo(h, -h, h, -k);
@@ -761,7 +765,12 @@ var stickerGeo = (function(){
   sh.lineTo(-k, h);  sh.quadraticCurveTo(-h, h, -h, k);
   sh.lineTo(-h, -k); sh.quadraticCurveTo(-h, -h, -k, -h);
   return new THREE.ShapeGeometry(sh, 8);
-})();
+}
+// classic: a rounded sticker sitting on a black cube. speed: a GAN-style
+// stickerless tile that fills the face, leaving only the plastic gap.
+var TILE = { classic:roundedTile(0.80, 0.15), speed:roundedTile(0.945, 0.13) };
+var stickerGeo = TILE.classic;
+var stickerMeshes = [];
 var stickerMats = {};
 Object.keys(COLORS).forEach(function(f){
   stickerMats[f] = new THREE.MeshStandardMaterial({
@@ -792,6 +801,7 @@ var cubies = [];
       var s = new THREE.Mesh(stickerGeo, stickerMats[f]);
       orientSticker(s, n);
       g.add(s);
+      stickerMeshes.push(s);
       stickers.push({ n0:n.slice(), color:f });
     });
     g.position.set(x, y, z);
@@ -1164,6 +1174,25 @@ document.getElementById("btnPrev").addEventListener("click", function(){
   setPlaying(false); frameHome(400); gotoIndex(index - 1);
 });
 document.getElementById("btnReset").addEventListener("click", function(){ setPlaying(false); gotoIndex(0); });
+
+var btnSkin = document.getElementById("btnSkin");
+function setSkin(speed){
+  var geo = speed ? TILE.speed : TILE.classic;
+  // the wider tile sits closer to the plastic so its edge doesn't float
+  var lift = speed ? 0.4845 : 0.492;
+  for (var i = 0; i < stickerMeshes.length; i++){
+    stickerMeshes[i].geometry = geo;
+    stickerMeshes[i].position.setLength(lift);
+  }
+  // stickerless plastic reads glossier than a vinyl sticker
+  Object.keys(stickerMats).forEach(function(f){ stickerMats[f].roughness = speed ? 0.30 : 0.42; });
+  btnSkin.setAttribute("aria-pressed", speed ? "true" : "false");
+  try { localStorage.setItem("cubeSkin", speed ? "speed" : "classic"); } catch (e) {}
+}
+btnSkin.addEventListener("click", function(){
+  setSkin(btnSkin.getAttribute("aria-pressed") !== "true");
+});
+setSkin((function(){ try { return localStorage.getItem("cubeSkin") === "speed"; } catch (e) { return false; } })());
 document.getElementById("btnRound").addEventListener("click", function(){
   setPlaying(false);
   frameHome(400);
