@@ -756,6 +756,15 @@ var rim  = new THREE.DirectionalLight(0xffffff, 0.18); rim.position.set(-2, 4, -
 
 var bodyGeo = new THREE.BoxGeometry(0.965, 0.965, 0.965);
 var bodyMat = new THREE.MeshStandardMaterial({ color:0x1a1b21, roughness:0.72, metalness:0.02 });
+// a stickerless cube has no black body: the plastic of each outer face is
+// moulded in that face's colour, so the seams read coloured, not dark
+var plasticMats = {};
+Object.keys(COLORS).forEach(function(f){
+  plasticMats[f] = new THREE.MeshStandardMaterial({
+    color:new THREE.Color(COLORS[f]), roughness:0.34, metalness:0.0
+  });
+});
+var BOX_FACE = ["R", "L", "U", "D", "F", "B"];   // BoxGeometry material order
 function roundedTile(size, r){
   var h = size / 2, k = h - r;
   var sh = new THREE.Shape();
@@ -792,7 +801,13 @@ var cubies = [];
   for (var x = -1; x <= 1; x++) for (var y = -1; y <= 1; y++) for (var z = -1; z <= 1; z++){
     if (x === 0 && y === 0 && z === 0) continue;
     var g = new THREE.Group();
-    g.add(new THREE.Mesh(bodyGeo, bodyMat));
+    var body = new THREE.Mesh(bodyGeo, bodyMat);
+    g.add(body);
+    var plastic = BOX_FACE.map(function(f){
+      var n = NORMALS[f];
+      var outer = (n[0] !== 0 && x === n[0]) || (n[1] !== 0 && y === n[1]) || (n[2] !== 0 && z === n[2]);
+      return outer ? plasticMats[f] : bodyMat;
+    });
     var stickers = [];
     Object.keys(NORMALS).forEach(function(f){
       var n = NORMALS[f];
@@ -806,7 +821,8 @@ var cubies = [];
     });
     g.position.set(x, y, z);
     cubeGroup.add(g);
-    cubies.push({ mesh:g, pos:[x, y, z], quat:new THREE.Quaternion(), stickers:stickers });
+    cubies.push({ mesh:g, pos:[x, y, z], quat:new THREE.Quaternion(), stickers:stickers,
+                  body:body, plastic:plastic });
   }
 })();
 
@@ -1179,13 +1195,17 @@ var btnSkin = document.getElementById("btnSkin");
 function setSkin(speed){
   var geo = speed ? TILE.speed : TILE.classic;
   // the wider tile sits closer to the plastic so its edge doesn't float
-  var lift = speed ? 0.4845 : 0.492;
+  var lift = speed ? 0.4945 : 0.492;
   for (var i = 0; i < stickerMeshes.length; i++){
     stickerMeshes[i].geometry = geo;
     stickerMeshes[i].position.setLength(lift);
   }
   // stickerless plastic reads glossier than a vinyl sticker
   Object.keys(stickerMats).forEach(function(f){ stickerMats[f].roughness = speed ? 0.30 : 0.42; });
+  for (var j = 0; j < cubies.length; j++){
+    cubies[j].body.material = speed ? cubies[j].plastic : bodyMat;
+    cubies[j].body.scale.setScalar(speed ? 1.02 : 1);   // tighter seams
+  }
   btnSkin.setAttribute("aria-pressed", speed ? "true" : "false");
   try { localStorage.setItem("cubeSkin", speed ? "speed" : "classic"); } catch (e) {}
 }
