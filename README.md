@@ -14,9 +14,16 @@ Then change anchor: turn one of the cross faces to the front and run the same ni
 rounds against it. All six faces end up with a cross.
 
 ```
-phase 1:  (R U R' U' ×3, z) ×9      anchor + opposite solid, 4 crosses
-re-anchor: y                        a cross face comes to the front
-phase 2:  (R U R' U' ×3, z) ×9      six crosses
+((R U R' U')3 z)9  y  ((R U R' U')3 z)9
+```
+
+Grouped with parentheses rather than square brackets, since `[A, B]` is a
+commutator in standard notation. Parses in alg.cubing.net, twizzle and cubing.js.
+
+```
+phase 1:   ((R U R' U')3 z)9    anchor + opposite solid, 4 crosses
+re-anchor: y                    a cross face comes to the front
+phase 2:   ((R U R' U')3 z)9    six crosses
 ```
 
 216 face turns, 19 whole-cube rotations, one algorithm.
