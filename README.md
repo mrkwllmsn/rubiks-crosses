@@ -3,6 +3,8 @@
 An interactive walkthrough of a Rubik's Cube pattern that puts a cross on all six
 faces using nothing but the Right-Hand Algorithm (`R U R' U'`).
 
+[![The finished pattern: a Rubik's Cube with a cross on every face, beside a readout marking all six as crosses](marks_cross.png)](https://mrkwllmsn.github.io/rubiks-crosses/)
+
 **[Open the demo](https://mrkwllmsn.github.io/rubiks-crosses/)** — a 3D viewer that
 plays the sequence move by move, narrates each turn, and shows the state of all six
 faces as it goes.
