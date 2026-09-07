@@ -765,7 +765,17 @@ var rim  = new THREE.DirectionalLight(0xffffff, 0.18); rim.position.set(-2, 4, -
 
 var bodyGeo = new THREE.BoxGeometry(0.965, 0.965, 0.965);
 var bodyMat = new THREE.MeshStandardMaterial({ color:0x1a1b21, roughness:0.72, metalness:0.02 });
-var stickerGeo = new THREE.PlaneGeometry(0.80, 0.80);
+var stickerGeo = (function(){
+  // rounded square, like a real cube's stickers
+  var size = 0.80, r = 0.15, h = size / 2, k = h - r;
+  var sh = new THREE.Shape();
+  sh.moveTo(-k, -h);
+  sh.lineTo(k, -h);  sh.quadraticCurveTo(h, -h, h, -k);
+  sh.lineTo(h, k);   sh.quadraticCurveTo(h, h, k, h);
+  sh.lineTo(-k, h);  sh.quadraticCurveTo(-h, h, -h, k);
+  sh.lineTo(-h, -k); sh.quadraticCurveTo(-h, -h, -k, -h);
+  return new THREE.ShapeGeometry(sh, 8);
+})();
 var stickerMats = {};
 Object.keys(COLORS).forEach(function(f){
   stickerMats[f] = new THREE.MeshStandardMaterial({
