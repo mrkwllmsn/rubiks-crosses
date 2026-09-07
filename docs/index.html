@@ -67,7 +67,11 @@ h1{
 }
 .standfirst{
   font-family:var(--font-read); font-size:19px; line-height:1.5; color:var(--dim);
-  margin:14px 0 0; max-width:52ch;
+  margin:10px 0 0; max-width:52ch;
+}
+.byline{
+  font-family:var(--font-mono); font-size:11px; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--ink); margin:14px 0 0;
 }
 .mast-r{display:flex; gap:28px; padding-bottom:6px}
 .stat{display:flex; flex-direction:column; gap:2px}
@@ -326,6 +330,10 @@ kbd{
 .key code{font-family:var(--font-mono); font-size:13px; font-weight:600; min-width:26px}
 .key span{font-family:var(--font-read); font-size:15px; color:var(--dim)}
 
+.story-by{
+  font-family:var(--font-mono); font-size:10px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--faint); margin:0 0 22px;
+}
 .story{max-width:60ch}
 .story p{
   font-family:var(--font-read); font-size:18px; line-height:1.62; color:var(--ink);
@@ -388,6 +396,7 @@ footer{
     <div class="mast-l">
       <p class="eyebrow">A one-algorithm cube pattern</p>
       <h1>Every Face a Cross</h1>
+      <p class="byline">Discovered by Mark Williamson</p>
       <p class="standfirst">Pick a face to watch. Run the same four moves at it until it comes back solid &mdash; the four faces around it are now crosses. Then pick one of those crosses to watch instead and do it again. Two phases, one algorithm, nothing else to memorise.</p>
     </div>
     <div class="mast-r">
@@ -564,6 +573,7 @@ footer{
 
   <section>
     <div class="sec-h"><span class="sec-n">05</span><h2>How this was found</h2></div>
+    <p class="story-by">Mark Williamson</p>
     <div class="story">
       <p>No theory behind it. I was up late pushing sequences around a cube &mdash; run something, turn the cube, run it again, see what falls out. Most of what I tried went nowhere; you get a mess, you reset, you try the next thing.</p>
       <p>Then I tried the Right-Hand Algorithm three times with a quarter-turn between, kept at it, and the face I was watching came back solid with crosses sitting on every side of it. That was the surprise. The obvious next question was whether the two faces still missing a cross could be dealt with the same way, so I turned one of the finished crosses to the front and ran exactly the same thing at it. They could.</p>

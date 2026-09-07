@@ -1,5 +1,7 @@
 # Every Face a Cross
 
+A cube pattern discovered by **Mark Williamson**.
+
 An interactive walkthrough of a Rubik's Cube pattern that puts a cross on all six
 faces using nothing but the Right-Hand Algorithm (`R U R' U'`).
 
