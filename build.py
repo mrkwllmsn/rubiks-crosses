@@ -2,7 +2,7 @@
 """Wrap index.html (authored for the Claude Artifact host) into a standalone page.
 
 index.html is the source of truth. It omits <!doctype>/<html>/<head>/<body> and the
-small reset the host injects — including the viewport meta, without which a phone
+small reset the host injects, including the viewport meta, without which a phone
 renders the page at 980px and no mobile media query ever matches.
 
 Output goes to docs/index.html, which is what GitHub Pages serves when the repo is
@@ -28,7 +28,7 @@ HEAD_OPEN = """<!doctype html>
   body { margin: 0; font: 14px system-ui, sans-serif; }
   img { max-width: 100%; }
   /* the page toggles .coach/.note/.fsbar with el.hidden, and those carry
-     display:flex — without !important the UA rule loses on specificity */
+     display:flex, and without !important the UA rule loses on specificity */
   [hidden] { display: none !important; }
 </style>
 """
