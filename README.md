@@ -38,14 +38,21 @@ re-colours everything.
 | File | Purpose |
 | --- | --- |
 | `index.html` | Source of truth. Authored for the Claude Artifact host, which supplies the `<!doctype>`, `<head>`, viewport meta and a small reset — so this file does **not** render correctly on its own (a phone will lay it out at 980px). |
-| `standalone.html` | Generated. The same page wrapped for ordinary hosting or `file://`. |
-| `build.py` | Regenerates `standalone.html` from `index.html`. |
+| `docs/index.html` | Generated, and what gets served. The same page wrapped for ordinary hosting or `file://`. |
+| `build.py` | Regenerates `docs/index.html` from `index.html`. |
 
 Edit `index.html`, then:
 
 ```sh
 python3 build.py
 ```
+
+## Publishing
+
+`docs/` is laid out for GitHub Pages. In the repository settings, under
+**Pages**, set the source to **Deploy from a branch**, branch `main`, folder
+`/docs`. Commit the regenerated `docs/index.html` alongside any change to
+`index.html`, or the published page will lag the source.
 
 The verified move sequence and the colour rules above were both checked against a
 cube simulator before the page was written.
