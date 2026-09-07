@@ -797,6 +797,7 @@ function isCross(g){
    Playback
    ============================================================ */
 
+var acc = 0, lastT = 0;
 var index = 0;                 // moves completed
 var playing = false;
 var anim = null;               // {spec, affected, from, to, t0, dur}
@@ -805,6 +806,10 @@ var speed = 2;
 var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 function moveDuration(){ return reduced ? 0 : 300 / speed; }
+/* the spin is the step people misread, so it runs slower than a face turn
+   and is followed by a short hold before the next trigger starts */
+function durationFor(spec){ return moveDuration() * (spec.layer === null ? 2.6 : 1); }
+function holdAfter(spec){ return spec.layer === null ? Math.max(140, moveDuration() * 1.1) : 0; }
 
 function stepInstant(){
   if (index >= TOTAL) return false;
@@ -818,7 +823,7 @@ function startAnimated(){
   if (index >= TOTAL || anim) return false;
   var spec = parseMove(SCRIPT[index].move);
   var affected = applyLogical(spec);
-  var dur = moveDuration();
+  var dur = durationFor(spec);
   if (dur === 0){ affected.forEach(syncMesh); index++; refresh(); return true; }
   pivot.rotation.set(0, 0, 0);
   pivot.quaternion.set(0, 0, 0, 1);
@@ -830,6 +835,7 @@ function startAnimated(){
 }
 
 function finishAnim(){
+  acc = -holdAfter(anim.spec);
   for (var i = 0; i < anim.affected.length; i++){
     cubeGroup.attach(anim.affected[i].mesh);
     syncMesh(anim.affected[i]);
@@ -1212,7 +1218,7 @@ function resize(){
 window.addEventListener("resize", resize);
 if (window.ResizeObserver) new ResizeObserver(resize).observe(canvas);
 
-var acc = 0, lastT = performance.now();
+lastT = performance.now();
 function tick(now){
   requestAnimationFrame(tick);
   var dt = now - lastT; lastT = now;
