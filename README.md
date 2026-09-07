@@ -3,6 +3,10 @@
 An interactive walkthrough of a Rubik's Cube pattern that puts a cross on all six
 faces using nothing but the Right-Hand Algorithm (`R U R' U'`).
 
+**[Open the demo](https://mrkwllmsn.github.io/rubiks-crosses/)** — a 3D viewer that
+plays the sequence move by move, narrates each turn, and shows the state of all six
+faces as it goes.
+
 ## The method
 
 Pick a face to look at, your **anchor**. Run the Right-Hand Algorithm three times,
@@ -56,9 +60,9 @@ python3 build.py
 
 ## Publishing
 
-`docs/` is laid out for GitHub Pages. In the repository settings, under
-**Pages**, set the source to **Deploy from a branch**, branch `main`, folder
-`/docs`. Commit the regenerated `docs/index.html` alongside any change to
+Served at <https://mrkwllmsn.github.io/rubiks-crosses/> from `docs/` on `main`.
+In the repository settings, under **Pages**, the source is **Deploy from a branch**,
+branch `main`, folder `/docs`. Commit the regenerated `docs/index.html` alongside any change to
 `index.html`, or the published page will lag the source.
 
 The verified move sequence and the colour rules above were both checked against a
