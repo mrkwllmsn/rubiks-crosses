@@ -488,7 +488,8 @@ footer{
           <button id="btnJump2">Skip to six crosses</button>
         </div>
         <div class="transport" style="margin-top:6px">
-          <button id="btnSkin" class="toggle" aria-pressed="false">Speed cube</button>
+          <button id="btnSkinClassic" class="toggle" aria-pressed="true">Classic cube</button>
+          <button id="btnSkinSpeed" class="toggle" aria-pressed="false">Speed cube</button>
         </div>
         <div class="speed">
           <label for="spd">Speed</label>
@@ -1205,7 +1206,8 @@ document.getElementById("btnPrev").addEventListener("click", function(){
 });
 document.getElementById("btnReset").addEventListener("click", function(){ setPlaying(false); gotoIndex(0); });
 
-var btnSkin = document.getElementById("btnSkin");
+var btnSkinClassic = document.getElementById("btnSkinClassic");
+var btnSkinSpeed = document.getElementById("btnSkinSpeed");
 function setSkin(speed){
   var geo = speed ? TILE.speed : TILE.classic;
   // the wider tile sits closer to the plastic so its edge doesn't float
@@ -1220,12 +1222,12 @@ function setSkin(speed){
     cubies[j].body.material = speed ? cubies[j].plastic : bodyMat;
     cubies[j].body.scale.setScalar(speed ? 1.02 : 1);   // tighter seams
   }
-  btnSkin.setAttribute("aria-pressed", speed ? "true" : "false");
+  btnSkinSpeed.setAttribute("aria-pressed", speed ? "true" : "false");
+  btnSkinClassic.setAttribute("aria-pressed", speed ? "false" : "true");
   try { localStorage.setItem("cubeSkin", speed ? "speed" : "classic"); } catch (e) {}
 }
-btnSkin.addEventListener("click", function(){
-  setSkin(btnSkin.getAttribute("aria-pressed") !== "true");
-});
+btnSkinClassic.addEventListener("click", function(){ setSkin(false); });
+btnSkinSpeed.addEventListener("click", function(){ setSkin(true); });
 setSkin((function(){ try { return localStorage.getItem("cubeSkin") === "speed"; } catch (e) { return false; } })());
 document.getElementById("btnRound").addEventListener("click", function(){
   setPlaying(false);
