@@ -147,6 +147,10 @@ body.no-scroll{overflow:hidden}
 }
 .note p:last-of-type{margin-bottom:14px}
 .note p b{font-weight:500}
+.note p.turning{
+  font-family:var(--font-mono); font-size:10px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--faint);
+}
 .note .transport{gap:8px}
 /* on a phone the card sits under the cube instead of burying it */
 @media (max-width:700px){
@@ -826,7 +830,7 @@ function gotoIndex(target){
   resetCube();
   index = 0;
   while (index < target) stepInstant();
-  if (target === 0) autoSpin = !userTookControl && !reduced;
+  if (target === 0) startSpin();
   refresh();
 }
 
@@ -896,7 +900,8 @@ var NOTES = {
     tag: "Phase one done \u00b7 round 9 of 9",
     body: "<p><b>White is solid again</b>, and yellow behind it. The four faces ringing them have turned into crosses \u2014 four of six.</p>" +
           "<p>White and yellow are the two still missing one, so <b>change anchor</b>: turn a cross face round to the front and watch that instead. White is no longer your reference point.</p>" +
-          "<p>Same nine rounds against the new anchor. The two solid faces gain crosses, the four you already have keep theirs in fresh colours, and the cube is finished.</p>",
+          "<p>Same nine rounds against the new anchor. The two solid faces gain crosses, the four you already have keep theirs in fresh colours, and the cube is finished.</p>" +
+          "<p class=\"turning\">Turning so you can see all six faces &mdash; drag to take over.</p>",
     go: "Change anchor and continue",
     stay: "Let me look first"
   },
@@ -1074,11 +1079,11 @@ document.getElementById("btnRound").addEventListener("click", function(){
   gotoIndex(index >= g.start + g.len ? index : g.start + g.len);
 });
 document.getElementById("btnJump1").addEventListener("click", function(){
-  setPlaying(false); frameHome(600); gotoIndex(MARK_PHASE1); openNote("phase2");
+  setPlaying(false); frameHome(600); gotoIndex(MARK_PHASE1); startSpin(); openNote("phase2");
 });
 document.getElementById("btnJump2").addEventListener("click", function(){
   setPlaying(false); gotoIndex(TOTAL);
-  if (!userTookControl) autoSpin = true;
+  startSpin();
   openNote("done");
 });
 
@@ -1101,9 +1106,17 @@ var autoSpin = !reduced, userTookControl = false, spinT = 0;
 var HOME_X = -0.26, HOME_Y = -0.44;
 var frame = null;
 
+/* spinT resets so the tilt sine starts at HOME_X — otherwise the cube jerks on resume */
+function startSpin(){
+  if (userTookControl || reduced) return;
+  spinT = 0;
+  autoSpin = true;
+}
+
 /* swing the view back square on the anchor face before any moves run */
 function frameHome(dur){
   autoSpin = false;
+  spinT = 0;
   var cx = world.rotation.x, cy = world.rotation.y;
   var ty = HOME_Y + Math.round((cy - HOME_Y) / (Math.PI * 2)) * Math.PI * 2;
   if (reduced || (Math.abs(cx - HOME_X) < 0.001 && Math.abs(cy - ty) < 0.001)){
@@ -1173,8 +1186,13 @@ function resize(){
   var r = canvas.getBoundingClientRect();
   var w = Math.max(1, r.width), h = Math.max(1, r.height);
   renderer.setSize(w, h, false);
-  camera.aspect = w / h;
-  camera.fov = w < 520 ? 44 : 36;
+  var aspect = w / h;
+  camera.aspect = aspect;
+  /* fit the cube on BOTH axes: a tall narrow viewport (a phone in fullscreen) needs a
+     wider vertical fov, or the horizontal field closes in and the cube fills the frame */
+  var need = 3.0 / camera.position.z;                 // half-extent to clear, at camera distance
+  var halfTan = Math.max(need, need / Math.max(aspect, 0.0001));
+  camera.fov = 2 * Math.atan(halfTan) * 180 / Math.PI;
   camera.updateProjectionMatrix();
 }
 window.addEventListener("resize", resize);
@@ -1204,12 +1222,13 @@ function tick(now){
   } else if (playing){
     if (index >= TOTAL){
       setPlaying(false);
-      if (!userTookControl) autoSpin = true;
+      startSpin();
       if (!noteSeen.done) openNote("done");
     }
     else {
       if (index === MARK_PHASE1 && !noteSeen.phase2){
         setPlaying(false);
+        startSpin();
         openNote("phase2");
       } else {
         acc += dt;
